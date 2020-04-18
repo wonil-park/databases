@@ -5,12 +5,17 @@ var mysql = require('mysql');
 // and to the database "chat".
 
 const db = mysql.createConnection({
-  user: 'root', //student
-  password: '', //studnent
+  user: 'root',
   database: 'chat'
 });
 
-db.connect();
+db.connect((err) => {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log('Connected to MySQL!');
+  }
+});
 //for each func need to connect and drop
 
 module.exports = db;

@@ -6,25 +6,23 @@ module.exports = {
   messages: {
     get: function (req, res) {
         //req includes constraints
-      models.messages.get((err, req) => {
+      models.messages.get((err, result) => {
         if (err) {
-          res.statusCode = 404;
-          res.send(err);
+          res.status(404).send(err);
         } else {
-          res.statusCode = 200;
-          res.send(req);
+          res.send(result);
         }
       });
     }, // a function which handles a get request for all messages
     post: function (req, res) {
-      let userReq = req.body.message;
+      const param = [req.body.username, req.body.message, req.body.roomname];
 
-      models.messages.post(userReq, (err, result) => {
+      models.messages.post(param, (err, result) => {
         if (err) {
-          res.sendStatus(400);
+          res.sendStatus(500);
         } else {
+          console.log(result);
           res.sendStatus(201);
-          //res.send(req);
         }
       });
 
@@ -34,9 +32,17 @@ module.exports = {
   users: {
     // Ditto as above
     get: function (req, res) {
+      models.users.get((err, result) => {
+        if (err) {
+          res.sendStatus(404);
+        } else {
+          res.send(result);
+        }
+      })
 
     },
     post: function (req, res) {
+      res.sendStatus(201);
       let username = [req.body.username];
       models.users.post(username, (err, result) => {
         if (err) {

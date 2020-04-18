@@ -6,38 +6,39 @@ module.exports = {
   messages: {
     get: function (callback) {
       //specify
-      let queryStr = 'SELECT * FROM messages';
-      // where optional! room_id = req.room_id'
-      let queryStrArgs = [];
+      // let queryStr = `SELECT messages.id, messages.body, messages.roomname, users.username FROM messages LEFT OUTER JOIN users ON (messages.user_id = users.id)`;
+      const queryStr = 'SELECT * FROM messages';
 
-      db.query(queryStr, queryStrArgs, (err, result) => {
+      db.query(queryStr, (err, result) => {
         if(err) {
-          callback(err);
+          console.log(err);
         } else {
+          console.log('get results: ', result);
           callback(null, result);
         }
       });
     }, // a function which produces all the messages
-    post: function (body, callback) {
-
-      let queryStr = `INSERT INTO messages(body) VALUE (?)`;
-      console.log('queryStr: ', queryStr, 'body: ', body);
+    post: function (param, callback) {
+      // argument order: username, message roomname
+      let queryStr = 'INSERT INTO messages(user_id, body, roomname) VALUES ((SELECT id FROM users WHERE users.username = ?), ?, ?)';
+      console.log('queryStr: ', queryStr, 'body: ', param);
       //req includes constraints (username, roomname)
-      db.query(queryStr, body, (err, result) => {
-        if (err) {
-          callback(err);
-        } else {
-          console.log('posted in db: ', result);
-          callback(null, result);
-        }
-      })
+      db.query(queryStr, param, (err, result) => {
+
+        console.log('posted in db: ', result);
+        callback(err, result)
+
+      });
     } // a function which can be used to insert a message into the database
   },
 
   users: {
     // Ditto as above.
-    get: function () {
-
+    get: function (callback) {
+      let queryStr = 'SELECT * FROM users';
+      db.query(queryStr, (err, result) => {
+        callback(err, result);
+      })
     },
 
     post: function (userName, callback) {
@@ -50,10 +51,6 @@ module.exports = {
         }
       })
     }
-  },
-
-  rooms: {
-
   }
 };
 
